@@ -1,0 +1,82 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30501.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Pokemon3DServer", "Pokemon3DServer\Pokemon3DServer.vbproj", "{A5C14B8F-FED2-41E5-BCF4-5DC6F4CE0909}"
+EndProject
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Pokemon3DServerV2", "Pokemon3DServerV2\Pokemon3DServerV2.vbproj", "{382D91E9-8A35-4FB3-BEA0-67B0F65DCCDD}"
+EndProject
+Global
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 3
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = https://kolben.visualstudio.com/defaultcollection
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = Pokemon3DServer\\Pokemon3DServer.vbproj
+		SccProjectName1 = Pokemon3DServer
+		SccLocalPath1 = Pokemon3DServer
+		SccProjectUniqueName2 = Pokemon3DServerV2\\Pokemon3DServerV2.vbproj
+		SccProjectName2 = Pokemon3DServerV2
+		SccLocalPath2 = Pokemon3DServerV2
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|Mixed Platforms = Debug|Mixed Platforms
+		Debug|x86 = Debug|x86
+		KolbenRelease|Any CPU = KolbenRelease|Any CPU
+		KolbenRelease|Mixed Platforms = KolbenRelease|Mixed Platforms
+		KolbenRelease|x86 = KolbenRelease|x86
+		PublicRelease|Any CPU = PublicRelease|Any CPU
+		PublicRelease|Mixed Platforms = PublicRelease|Mixed Platforms
+		PublicRelease|x86 = PublicRelease|x86
+		Release|Any CPU = Release|Any CPU
+		Release|Mixed Platforms = Release|Mixed Platforms
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A5C14B8F-FED2-41E5-BCF4-5DC6F4CE0909}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{A5C14B8F-FED2-41E5-BCF4-5DC6F4CE0909}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{A5C14B8F-FED2-41E5-BCF4-5DC6F4CE0909}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{A5C14B8F-FED2-41E5-BCF4-5DC6F4CE0909}.Debug|x86.ActiveCfg = Debug|x86
+		{A5C14B8F-FED2-41E5-BCF4-5DC6F4CE0909}.Debug|x86.Build.0 = Debug|x86
+		{A5C14B8F-FED2-41E5-BCF4-5DC6F4CE0909}.KolbenRelease|Any CPU.ActiveCfg = KolbenRelease|x86
+		{A5C14B8F-FED2-41E5-BCF4-5DC6F4CE0909}.KolbenRelease|Mixed Platforms.ActiveCfg = KolbenRelease|x86
+		{A5C14B8F-FED2-41E5-BCF4-5DC6F4CE0909}.KolbenRelease|Mixed Platforms.Build.0 = KolbenRelease|x86
+		{A5C14B8F-FED2-41E5-BCF4-5DC6F4CE0909}.KolbenRelease|x86.ActiveCfg = KolbenRelease|x86
+		{A5C14B8F-FED2-41E5-BCF4-5DC6F4CE0909}.KolbenRelease|x86.Build.0 = KolbenRelease|x86
+		{A5C14B8F-FED2-41E5-BCF4-5DC6F4CE0909}.PublicRelease|Any CPU.ActiveCfg = PublicRelease|x86
+		{A5C14B8F-FED2-41E5-BCF4-5DC6F4CE0909}.PublicRelease|Mixed Platforms.ActiveCfg = PublicRelease|x86
+		{A5C14B8F-FED2-41E5-BCF4-5DC6F4CE0909}.PublicRelease|Mixed Platforms.Build.0 = PublicRelease|x86
+		{A5C14B8F-FED2-41E5-BCF4-5DC6F4CE0909}.PublicRelease|x86.ActiveCfg = PublicRelease|x86
+		{A5C14B8F-FED2-41E5-BCF4-5DC6F4CE0909}.PublicRelease|x86.Build.0 = PublicRelease|x86
+		{A5C14B8F-FED2-41E5-BCF4-5DC6F4CE0909}.Release|Any CPU.ActiveCfg = PublicRelease|x86
+		{A5C14B8F-FED2-41E5-BCF4-5DC6F4CE0909}.Release|Mixed Platforms.ActiveCfg = PublicRelease|x86
+		{A5C14B8F-FED2-41E5-BCF4-5DC6F4CE0909}.Release|Mixed Platforms.Build.0 = PublicRelease|x86
+		{A5C14B8F-FED2-41E5-BCF4-5DC6F4CE0909}.Release|x86.ActiveCfg = PublicRelease|x86
+		{A5C14B8F-FED2-41E5-BCF4-5DC6F4CE0909}.Release|x86.Build.0 = PublicRelease|x86
+		{382D91E9-8A35-4FB3-BEA0-67B0F65DCCDD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{382D91E9-8A35-4FB3-BEA0-67B0F65DCCDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{382D91E9-8A35-4FB3-BEA0-67B0F65DCCDD}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{382D91E9-8A35-4FB3-BEA0-67B0F65DCCDD}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{382D91E9-8A35-4FB3-BEA0-67B0F65DCCDD}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{382D91E9-8A35-4FB3-BEA0-67B0F65DCCDD}.KolbenRelease|Any CPU.ActiveCfg = Release|Any CPU
+		{382D91E9-8A35-4FB3-BEA0-67B0F65DCCDD}.KolbenRelease|Any CPU.Build.0 = Release|Any CPU
+		{382D91E9-8A35-4FB3-BEA0-67B0F65DCCDD}.KolbenRelease|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{382D91E9-8A35-4FB3-BEA0-67B0F65DCCDD}.KolbenRelease|Mixed Platforms.Build.0 = Release|Any CPU
+		{382D91E9-8A35-4FB3-BEA0-67B0F65DCCDD}.KolbenRelease|x86.ActiveCfg = Release|Any CPU
+		{382D91E9-8A35-4FB3-BEA0-67B0F65DCCDD}.PublicRelease|Any CPU.ActiveCfg = Release|Any CPU
+		{382D91E9-8A35-4FB3-BEA0-67B0F65DCCDD}.PublicRelease|Any CPU.Build.0 = Release|Any CPU
+		{382D91E9-8A35-4FB3-BEA0-67B0F65DCCDD}.PublicRelease|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{382D91E9-8A35-4FB3-BEA0-67B0F65DCCDD}.PublicRelease|Mixed Platforms.Build.0 = Release|Any CPU
+		{382D91E9-8A35-4FB3-BEA0-67B0F65DCCDD}.PublicRelease|x86.ActiveCfg = Release|Any CPU
+		{382D91E9-8A35-4FB3-BEA0-67B0F65DCCDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{382D91E9-8A35-4FB3-BEA0-67B0F65DCCDD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{382D91E9-8A35-4FB3-BEA0-67B0F65DCCDD}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{382D91E9-8A35-4FB3-BEA0-67B0F65DCCDD}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{382D91E9-8A35-4FB3-BEA0-67B0F65DCCDD}.Release|x86.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
