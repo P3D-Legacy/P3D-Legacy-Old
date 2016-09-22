@@ -1032,7 +1032,9 @@ Public Class Item
                 Return New Items.Standard.LuckIncense()
             Case 291
                 Return New Items.Standard.PureIncense()
-                'Case 292 - 299: Reserved for upcoming items.
+            Case 292
+                Return New Items.KeyItems.EmptySeaMap()
+                'Case 293 - 299: Reserved for upcoming items.
 
             Case 300
                 Return New Items.Mail.GrassMail()
