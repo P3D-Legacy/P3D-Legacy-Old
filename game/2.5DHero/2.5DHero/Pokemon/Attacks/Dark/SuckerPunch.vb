@@ -11,7 +11,7 @@
             Me.OriginalPP = 5
             Me.CurrentPP = 5
             Me.MaxPP = 5
-            Me.Power = 80
+            Me.Power = 70
             Me.Accuracy = 100
             Me.Category = Categories.Physical
             Me.ContestCategory = ContestCategories.Smart
@@ -41,7 +41,7 @@
 
             Me.IsHealingMove = False
             Me.IsRecoilMove = False
-            Me.IsPunchingMove = True
+            Me.IsPunchingMove = False
             Me.IsDamagingMove = True
             Me.IsProtectMove = False
             Me.IsSoundMove = False
