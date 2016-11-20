@@ -2372,11 +2372,23 @@ Public Class Pokemon
 
                     Textures(index) = net.Pokemon3D.Game.TextureManager.GetTexture("GUI\PokemonMenu" & shiny, New Rectangle(CInt(v.X) * 32, CInt(v.Y) * 32, s.Width, s.Height), "")
                 Case 5
-                    Textures(index) = EggCreator.CreateEggSprite(Me, net.Pokemon3D.Game.TextureManager.GetTexture("GUI\PokemonMenu", New Rectangle(992, 992, 32, 32), ""), net.Pokemon3D.Game.TextureManager.GetTexture("Pokemon\Egg\Templates\Menu"))
+                    If Me.Number = 490 Then
+                        Textures(index) = net.Pokemon3D.Game.TextureManager.GetTexture("GUI\PokemonMenu", New Rectangle(928, 992, 32, 32), "")
+                    Else
+                        Textures(index) = EggCreator.CreateEggSprite(Me, net.Pokemon3D.Game.TextureManager.GetTexture("GUI\PokemonMenu", New Rectangle(992, 992, 32, 32), ""), net.Pokemon3D.Game.TextureManager.GetTexture("Pokemon\Egg\Templates\Menu"))
+                    End If
                 Case 6
-                    Textures(index) = EggCreator.CreateEggSprite(Me, net.Pokemon3D.Game.TextureManager.GetTexture("Pokemon\Egg\Egg_front"), net.Pokemon3D.Game.TextureManager.GetTexture("Pokemon\Egg\Templates\Front"))
+                    If Me.Number = 490 Then
+                        Textures(index) = net.Pokemon3D.Game.TextureManager.GetTexture("Pokemon\Egg\Egg_manaphy_front")
+                    Else
+                        Textures(index) = EggCreator.CreateEggSprite(Me, net.Pokemon3D.Game.TextureManager.GetTexture("Pokemon\Egg\Egg_front"), net.Pokemon3D.Game.TextureManager.GetTexture("Pokemon\Egg\Templates\Front"))
+                    End If
                 Case 7
-                    Textures(index) = EggCreator.CreateEggSprite(Me, net.Pokemon3D.Game.TextureManager.GetTexture("Pokemon\Egg\Egg_back"), net.Pokemon3D.Game.TextureManager.GetTexture("Pokemon\Egg\Templates\Back"))
+                    If Me.Number = 490 Then
+                        Textures(index) = net.Pokemon3D.Game.TextureManager.GetTexture("Pokemon\Egg\Egg_manaphy_back")
+                    Else
+                        Textures(index) = EggCreator.CreateEggSprite(Me, net.Pokemon3D.Game.TextureManager.GetTexture("Pokemon\Egg\Egg_back"), net.Pokemon3D.Game.TextureManager.GetTexture("Pokemon\Egg\Templates\Back"))
+                    End If
                 Case 8
                     Dim addition As String = PokemonForms.GetOverworldAddition(Me)
                     Textures(index) = net.Pokemon3D.Game.TextureManager.GetTexture("Pokemon\Overworld\Normal\" & Me.Number & addition)
@@ -2676,51 +2688,94 @@ Public Class Pokemon
     ''' Adds Effort values (EV) to this Pokémon after defeated another Pokémon, if possible.
     ''' </summary>
     ''' <param name="DefeatedPokemon">The defeated Pokémon.</param>
-    Public Sub GainEffort(ByVal DefeatedPokemon As Pokemon)
+    Public Sub GainEffort(ByVal pokemon As Pokemon, ByVal DefeatedPokemon As Pokemon)
         Dim allEV As Integer = EVHP + EVAttack + EVDefense + EVSpeed + EVSpAttack + EVSpDefense
         If allEV < 510 Then
             Dim maxGainEV As Integer = 0
             If allEV < 510 Then
                 maxGainEV = 510 - allEV
             End If
-            If maxGainEV > 0 Then
-                maxGainEV = CInt(MathHelper.Clamp(maxGainEV, 1, 3))
 
-                If Me.EVHP < 255 And DefeatedPokemon.GiveEVHP > 0 Then
+            Dim EVfactor As Integer = 1
+
+            If maxGainEV > 0 Then
+                maxGainEV = CInt(MathHelper.Clamp(maxGainEV, 1, 6))
+                If Not pokemon.Item Is Nothing Then
+                    Select Case pokemon.Item.ID()
+                        Case 582, 583, 584, 585, 586, 587 'EV Items
+
+                            If Me.EVHP < 252 And pokemon.Item.ID = 582 Then
+                                Me.EVHP += CInt(MathHelper.Clamp(4, 0, 252 - Me.EVHP))
+                            End If
+
+                            If Me.EVAttack < 252 And pokemon.Item.ID = 583 Then
+                                Me.EVAttack += CInt(MathHelper.Clamp(4, 0, 252 - Me.EVHP))
+                            End If
+
+                            If Me.EVDefense < 252 And pokemon.Item.ID = 584 Then
+                                Me.EVDefense += CInt(MathHelper.Clamp(4, 0, 252 - Me.EVHP))
+                            End If
+
+                            If Me.EVSpAttack < 252 And pokemon.Item.ID = 585 Then
+                                Me.EVSpAttack += CInt(MathHelper.Clamp(4, 0, 252 - Me.EVHP))
+                            End If
+
+                            If Me.EVSpDefense < 252 And pokemon.Item.ID = 586 Then
+                                Me.EVSpDefense += CInt(MathHelper.Clamp(4, 0, 252 - Me.EVHP))
+                            End If
+
+                            If Me.Speed < 252 And pokemon.Item.ID = 587 Then
+                                Me.Speed += CInt(MathHelper.Clamp(4, 0, 252 - Me.EVHP))
+                            End If
+
+                            Exit Sub
+                        Case 581  'Item 581 is Macho Brace
+                            EVfactor = 2
+                    End Select
+                End If
+
+                If Me.EVHP < 252 And DefeatedPokemon.GiveEVHP > 0 Then
                     Dim gainHPEV As Integer = DefeatedPokemon.GiveEVHP
-                    gainHPEV = CInt(MathHelper.Clamp(gainHPEV, 0, 255 - Me.EVHP))
+                    gainHPEV = gainHPEV * EVfactor
+                    gainHPEV = CInt(MathHelper.Clamp(gainHPEV, 0, 252 - Me.EVHP))
                     Me.EVHP += gainHPEV
                 End If
 
-                If Me.EVAttack < 255 And DefeatedPokemon.GiveEVAttack > 0 Then
+                If Me.EVAttack < 252 And DefeatedPokemon.GiveEVAttack > 0 Then
                     Dim gainAttackEV As Integer = DefeatedPokemon.GiveEVAttack
-                    gainAttackEV = CInt(MathHelper.Clamp(gainAttackEV, 0, 255 - Me.EVAttack))
+                    gainAttackEV = gainAttackEV * EVfactor
+                    gainAttackEV = CInt(MathHelper.Clamp(gainAttackEV, 0, 252 - Me.EVAttack))
                     Me.EVAttack += gainAttackEV
                 End If
 
-                If Me.EVDefense < 255 And DefeatedPokemon.GiveEVDefense > 0 Then
+                If Me.EVDefense < 252 And DefeatedPokemon.GiveEVDefense > 0 Then
                     Dim gainDefenseEV As Integer = DefeatedPokemon.GiveEVDefense
-                    gainDefenseEV = CInt(MathHelper.Clamp(gainDefenseEV, 0, 255 - Me.EVDefense))
+                    gainDefenseEV = gainDefenseEV * EVfactor
+                    gainDefenseEV = CInt(MathHelper.Clamp(gainDefenseEV, 0, 252 - Me.EVDefense))
                     Me.EVDefense += gainDefenseEV
                 End If
 
-                If Me.EVSpeed < 255 And DefeatedPokemon.GiveEVSpeed > 0 Then
-                    Dim gainSpeedEV As Integer = DefeatedPokemon.GiveEVSpeed
-                    gainSpeedEV = CInt(MathHelper.Clamp(gainSpeedEV, 0, 255 - Me.EVSpeed))
-                    Me.EVSpeed += gainSpeedEV
-                End If
-
-                If Me.EVSpAttack < 255 And DefeatedPokemon.GiveEVSpAttack > 0 Then
+                If Me.EVSpAttack < 252 And DefeatedPokemon.GiveEVSpAttack > 0 Then
                     Dim gainSpAttackEV As Integer = DefeatedPokemon.GiveEVSpAttack
-                    gainSpAttackEV = CInt(MathHelper.Clamp(gainSpAttackEV, 0, 255 - Me.EVSpAttack))
+                    gainSpAttackEV = gainSpAttackEV * EVfactor
+                    gainSpAttackEV = CInt(MathHelper.Clamp(gainSpAttackEV, 0, 252 - Me.EVSpAttack))
                     Me.EVSpAttack += gainSpAttackEV
                 End If
 
-                If Me.EVSpDefense < 255 And DefeatedPokemon.GiveEVSpDefense > 0 Then
+                If Me.EVSpDefense < 252 And DefeatedPokemon.GiveEVSpDefense > 0 Then
                     Dim gainSpDefenseEV As Integer = DefeatedPokemon.GiveEVSpDefense
-                    gainSpDefenseEV = CInt(MathHelper.Clamp(gainSpDefenseEV, 0, 255 - Me.EVSpDefense))
+                    gainSpDefenseEV = gainSpDefenseEV * EVfactor
+                    gainSpDefenseEV = CInt(MathHelper.Clamp(gainSpDefenseEV, 0, 252 - Me.EVSpDefense))
                     Me.EVSpDefense += gainSpDefenseEV
                 End If
+
+                If Me.EVSpeed < 252 And DefeatedPokemon.GiveEVSpeed > 0 Then
+                    Dim gainSpeedEV As Integer = DefeatedPokemon.GiveEVSpeed
+                    gainSpeedEV = gainSpeedEV * EVfactor
+                    gainSpeedEV = CInt(MathHelper.Clamp(gainSpeedEV, 0, 252 - Me.EVSpeed))
+                    Me.EVSpeed += gainSpeedEV
+                End If
+
             End If
         End If
     End Sub

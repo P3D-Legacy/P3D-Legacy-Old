@@ -9,7 +9,7 @@ Public Class PokemonForms
                                New Sceptile(), New Blaziken(), New Swampert(), New Gardevoir(), New Aggron(), New Medicham(), New Camerupt(), New Altaria(), New Banette(), New Absol(), New Metagross(), New Kyogre(), New Groudon(), New Deoxys(),
                                New Burmy(), New Shellos(), New Gastrodon(), New Lopunny(), New Garchomp(), New Lucario(), New Abomasnow(), New Gallade(), New Rotom(), New Dialga(), New Arceus(),
                                New Audino(), New Basculin(), New Deerling(), New Sawsbuck(), New Frillish(), New Jellicent(), New Tornadus(), New Thundurus(), New Landorus(), New Kyurem(),
-                               New Aegislash(), New Diancie()})
+                               New Vivillon(), New Pyroar(), New Aegislash(), New Diancie()})
 
     End Sub
 
@@ -1212,10 +1212,10 @@ Public Class PokemonForms
         End Function
         Public Overrides Function GetMenuImageSize(ByVal P As Pokemon) As Size
             Select Case P.AdditionalData
-                Case "mega"
+                Case "primal"
                     Return New Size(36, 32)
                 Case Else
-                    Return New Size(35, 32)
+                    Return New Size(32, 32)
             End Select
         End Function
         Public Overrides Function GetDataFileAddition(ByVal AdditionalData As String) As String
@@ -1260,7 +1260,7 @@ Public Class PokemonForms
         End Function
         Public Overrides Function GetMenuImageSize(ByVal P As Pokemon) As Size
             Select Case P.AdditionalData
-                Case "mega"
+                Case "primal"
                     Return New Size(36, 32)
                 Case Else
                     Return New Size(35, 32)
@@ -2220,6 +2220,153 @@ Public Class PokemonForms
             End Select
         End Function
 
+    End Class
+
+    Private Class Vivillon
+        Inherits PokemonForm
+
+        Public Sub New()
+            MyBase.New(666)
+        End Sub
+
+        Public Overrides Function GetMenuImagePosition(ByVal P As Pokemon) As Vector2
+            Select Case P.AdditionalData
+                Case "archipelago"
+                    Return New Vector2(18, 28)
+                Case "continental"
+                    Return New Vector2(12, 28)
+                Case "elegant"
+                    Return New Vector2(14, 28)
+                Case "fancy"
+                    Return New Vector2(28, 28)
+                Case "garden"
+                    Return New Vector2(13, 28)
+                Case "high_planes"
+                    Return New Vector2(19, 28)
+                Case "icy_snow"
+                    Return New Vector2(15, 28)
+                Case "jungle"
+                    Return New Vector2(26, 28)
+                Case "marine"
+                    Return New Vector2(17, 28)
+                Case "meadow"
+                    Return New Vector2(25, 20)
+                Case "modern"
+                    Return New Vector2(16, 28)
+                Case "monsoon"
+                    Return New Vector2(22, 28)
+                Case "ocean"
+                    Return New Vector2(25, 28)
+                Case "pokeball"
+                    Return New Vector2(27, 28)
+                Case "polar"
+                    Return New Vector2(10, 28)
+                Case "river"
+                    Return New Vector2(21, 28)
+                Case "sandstorm"
+                    Return New Vector2(20, 28)
+                Case "savanna"
+                    Return New Vector2(23, 28)
+                Case "sun"
+                    Return New Vector2(24, 28)
+                Case "tundra"
+                    Return New Vector2(11, 28)
+                Case Else
+                    Return New Vector2(25, 20)
+            End Select
+        End Function
+
+        Public Overrides Function GetOverworldAddition(ByVal P As Pokemon) As String
+            Select Case P.AdditionalData
+                Case "archipelago"
+                    Return "_archipelago"
+                Case "continental"
+                    Return "_continental"
+                Case "elegant"
+                    Return "_elegant"
+                Case "fancy"
+                    Return "_fancy"
+                Case "garden"
+                    Return "_garden"
+                Case "high_planes"
+                    Return "_high_planes"
+                Case "icy_snow"
+                    Return "_icy_snow"
+                Case "jungle"
+                    Return "_jungle"
+                Case "marine"
+                    Return "_marine"
+                Case "meadow"
+                    Return "_meadow"
+                Case "modern"
+                    Return "_modern"
+                Case "monsoon"
+                    Return "_monsoon"
+                Case "ocean"
+                    Return "_ocean"
+                Case "pokeball"
+                    Return "_pokeball"
+                Case "polar"
+                    Return "_polar"
+                Case "river"
+                    Return "_river"
+                Case "sandstorm"
+                    Return "_sandstorm"
+                Case "savanna"
+                    Return "_savanna"
+                Case "sun"
+                    Return "_sun"
+                Case "tundra"
+                    Return "_tundra"
+                Case Else
+                    Return "_meadow"
+            End Select
+        End Function
+    End Class
+
+    Private Class Pyroar
+
+        Inherits PokemonForm
+
+        Public Sub New()
+            MyBase.New(668)
+        End Sub
+
+        Public Overrides Function GetMenuImagePosition(ByVal P As Pokemon) As Vector2
+            Select Case P.Gender
+                Case Pokemon.Genders.Male
+                    Return New Vector2(27, 20)
+                Case Else
+                    Return New Vector2(27, 31)
+            End Select
+        End Function
+
+        Public Overrides Function GetMenuImageSize(ByVal P As Pokemon) As Size
+            Select Case P.Gender
+                Case Pokemon.Genders.Male
+                    Return New Size(32, 32)
+                Case Else
+                    Return New Size(32, 32)
+            End Select
+        End Function
+
+        Public Overrides Function GetAnimationName(ByVal P As Pokemon) As String
+            Select Case P.Gender
+                Case Pokemon.Genders.Male
+                    Return P.OriginalName & "_male"
+                Case Else
+                    Return P.OriginalName & "_female"
+            End Select
+        End Function
+
+        Public Overrides Function GetOverworldAddition(ByVal P As Pokemon) As String
+            Select Case P.Gender
+                Case Pokemon.Genders.Male
+                    Return "_male"
+                Case Else
+                    Return "_female"
+            End Select
+        End Function
     End Class
 
     Private Class Aegislash

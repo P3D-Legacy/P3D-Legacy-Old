@@ -271,7 +271,7 @@
             End If
         End Sub
 
-        Public Sub Update(ByVal BattleScreen As BattleScreen)
+        Public Sub Update(ByRef BattleScreen As BattleScreen)
             Select Case MenuState
                 Case MenuStates.Main
                     UpdateMainMenu(BattleScreen)
@@ -559,7 +559,13 @@
             Next
         End Sub
 
-        Private Sub UpdateMainMenu(ByVal BattleScreen As BattleScreen)
+        Private Sub UpdateMainMenu(ByRef BattleScreen As BattleScreen)
+
+            If BattleScreen.ClearMenuTime = True Then
+                _mainMenuItemList.Clear()
+                BattleScreen.ClearMenuTime = False
+            End If
+
             If _mainMenuItemList.Count = 0 Then
                 CreateMainMenuItems(BattleScreen)
             End If
@@ -570,15 +576,10 @@
             End If
 
             UpdateMenuOptions(_mainMenuIndex, _mainMenuNextIndex, _mainMenuItemList.Count)
-            If BattleScreen.ClearMenuTime = True Then
-                _mainMenuItemList.Clear()
-                BattleScreen.ClearMenuTime = False
-            End If
         End Sub
 
-        Private Sub CreateMainMenuItems(ByVal BattleScreen As BattleScreen)
+        Private Sub CreateMainMenuItems(ByRef BattleScreen As BattleScreen)
             _mainMenuItemList.Clear()
-
             Select Case BattleScreen.BattleMode
                 Case BattleSystem.BattleScreen.BattleModes.Safari
                     Dim safariBallText As String = "Safari Ball x" & Core.Player.Inventory.GetItemAmount(181).ToString()
@@ -603,15 +604,34 @@
                     _mainMenuItemList.Add(New MainMenuItem(3, "Run", 3, AddressOf MainMenuRun))
 
                 Case BattleSystem.BattleScreen.BattleModes.Standard
-                    _mainMenuItemList.Add(New MainMenuItem(0, "Battle", 0, AddressOf MainMenuOpenBattleMenu))
-                    _mainMenuItemList.Add(New MainMenuItem(1, "Pokémon", 1, AddressOf MainMenuOpenPokemon))
-                    _mainMenuItemList.Add(New MainMenuItem(2, "Bag", 2, AddressOf MainMenuOpenBag))
-
-                    If BattleScreen.IsTrainerBattle = False Then
-                        _mainMenuItemList.Add(New MainMenuItem(3, "Run", 3, AddressOf MainMenuRun))
-                        MainMenuAddMegaEvolution(BattleScreen, 4)
+                    If BattleScreen.OwnFaint Then
+                        _mainMenuItemList.Add(New MainMenuItem(1, "Pokémon", 0, AddressOf MainMenuOpenPokemon))
+                        If BattleScreen.IsRemoteBattle AndAlso Not BattleScreen.IsHost Then
+                            BattleScreen.OwnFaint = False
+                        End If
+                    ElseIf BattleScreen.OppFaint And BattleScreen.IsRemoteBattle Then
+                        If BattleScreen.IsHost Then
+                            BattleScreen.BattleQuery.Clear()
+                            BattleScreen.BattleQuery.Insert(0, New ToggleMenuQueryObject(True))
+                            BattleScreen.Battle.InitializeRound(BattleScreen, New Battle.RoundConst With {.StepType = Battle.RoundConst.StepTypes.Text, .Argument = "The client sends the next pokemon!"})
+                        Else
+                            BattleScreen.OwnStatistics.Switches += 1
+                            BattleScreen.BattleQuery.Clear()
+                            BattleScreen.BattleQuery.Insert(0, New ToggleMenuQueryObject(True))
+                            BattleScreen.SendClientCommand("TEXT|" & "The host sends the next pokemon!")
+                        End If
+                        BattleScreen.OppFaint = False
                     Else
-                        MainMenuAddMegaEvolution(BattleScreen, 3)
+                        _mainMenuItemList.Add(New MainMenuItem(0, "Battle", 0, AddressOf MainMenuOpenBattleMenu))
+                        _mainMenuItemList.Add(New MainMenuItem(1, "Pokémon", 1, AddressOf MainMenuOpenPokemon))
+                        _mainMenuItemList.Add(New MainMenuItem(2, "Bag", 2, AddressOf MainMenuOpenBag))
+
+                        If BattleScreen.IsTrainerBattle = False Then
+                            _mainMenuItemList.Add(New MainMenuItem(3, "Run", 3, AddressOf MainMenuRun))
+                            MainMenuAddMegaEvolution(BattleScreen, 4)
+                        Else
+                            MainMenuAddMegaEvolution(BattleScreen, 3)
+                        End If
                     End If
 
                 Case BattleSystem.BattleScreen.BattleModes.PVP
@@ -622,6 +642,12 @@
         End Sub
 
         Private Sub MainMenuAddMegaEvolution(ByVal BattleScreen As BattleScreen, ByVal Index As Integer)
+
+            'Checks if the player has the Mega Bracelet.
+            If Not (Core.Player.Inventory.GetItemAmount(576) > 0) Then
+                Exit Sub
+            End If
+
             If _mainMenuIndex >= 3 Then
                 _mainMenuIndex = 0
             End If
@@ -788,7 +814,7 @@
             Else
                 UseStruggle(BattleScreen)
 
-                If _moveMenuItemList.Count = 0 Or _moveMenuCreatedID <> BattleScreen.OwnPokemon.IndividualValue Then
+                If _moveMenuItemList.Count = 0 Or _moveMenuCreatedID <> BattleScreen.OwnPokemon.IndividualValue Or BattleScreen.IsChoiced Then
                     If _moveMenuCreatedID <> BattleScreen.OwnPokemon.IndividualValue Then
                         _moveMenuIndex = 0
                     End If
@@ -850,6 +876,7 @@
                 BattleScreen.BattleQuery.Insert(0, New ToggleMenuQueryObject(True))
                 If BattleScreen.IsMegaEvolvingOwn Then
                     BattleScreen.SendClientCommand("MEGA|" & BattleScreen.OwnPokemon.Attacks(_moveMenuIndex).ID.ToString())
+                    BattleScreen.IsMegaEvolvingOwn = False
                 Else
                     BattleScreen.SendClientCommand("MOVE|" & BattleScreen.OwnPokemon.Attacks(_moveMenuIndex).ID.ToString())
                 End If
@@ -897,6 +924,7 @@
                         Else
                             If TempBattleScreen.OwnPokemonIndex <> PokeIndex Then
                                 If TempBattleScreen.IsRemoteBattle = True And TempBattleScreen.IsHost = False Then
+                                    BattleScreen.OppFaint = False
                                     TempBattleScreen.OwnStatistics.Switches += 1
                                     TempBattleScreen.BattleQuery.Clear()
                                     TempBattleScreen.BattleQuery.Add(TempBattleScreen.FocusBattle())

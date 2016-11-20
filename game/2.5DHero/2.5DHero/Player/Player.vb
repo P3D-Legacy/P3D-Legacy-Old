@@ -567,6 +567,68 @@
 
         Entity.MakeShake = Name.ToLower() = "drunknilllzz"
 
+        ''' Indev 0.54 Removal List
+        ''' 1. All Mega Stones. [ID: 507 - 553]
+        ''' 2. Shiny Candy [ID: 501]
+        If Not ActionScript.IsRegistered("PokemonIndev054Update") Then
+            ' Check Inventory.
+            Inventory.RemoveItem(501)
+            For i As Integer = 507 To 553 Step +1
+                Inventory.RemoveItem(i)
+            Next
+
+            ' Check Party Pokemon.
+            For Each Pokemon As Pokemon In Pokemons
+                If Pokemon.Item IsNot Nothing AndAlso (Pokemon.Item.ID >= 501 OrElse (Pokemon.Item.ID >= 507 AndAlso Pokemon.Item.ID <= 553)) Then
+                    Pokemon.Item = Nothing
+                End If
+            Next
+
+            ' Check PC Boxes.
+            If Not String.IsNullOrWhiteSpace(BoxData) Then
+                Dim TempBoxData As New List(Of String)
+                TempBoxData.AddRange(BoxData.SplitAtNewline())
+
+                For Each item As String In TempBoxData
+                    If Not String.IsNullOrWhiteSpace(item) AndAlso Not item.StartsWith("BOX") Then
+                        Dim TempString As String = item.Remove(item.IndexOf("{"))
+                        Dim TempPokemon As Pokemon = Pokemon.GetPokemonByData(item.Remove(0, item.IndexOf("{")))
+
+                        If TempPokemon.Item IsNot Nothing AndAlso (TempPokemon.Item.ID >= 501 OrElse (TempPokemon.Item.ID >= 507 AndAlso TempPokemon.Item.ID <= 553)) Then
+                            TempPokemon.Item = Nothing
+                        End If
+
+                        item = TempString & TempPokemon.ToString()
+                    End If
+                Next
+
+                BoxData = String.Join(vbNewLine, TempBoxData)
+            End If
+
+            ' Check Day Care.
+            If Not String.IsNullOrWhiteSpace(DaycareData) Then
+                Dim TempDaycareData As New List(Of String)
+                TempDaycareData.AddRange(DaycareData.SplitAtNewline())
+
+                For Each item As String In TempDaycareData
+                    If Not String.IsNullOrWhiteSpace(item) AndAlso item.Contains("{") Then
+                        Dim TempString As String = ItemData.Remove(item.IndexOf("{"))
+                        Dim TempPokemon As Pokemon = Pokemon.GetPokemonByData(item.Remove(0, item.IndexOf("{")))
+
+                        If TempPokemon.Item IsNot Nothing AndAlso (TempPokemon.Item.ID >= 501 OrElse (TempPokemon.Item.ID >= 507 AndAlso TempPokemon.Item.ID <= 553)) Then
+                            TempPokemon.Item = Nothing
+                        End If
+
+                        item = TempString & TempPokemon.ToString()
+                    End If
+                Next
+
+                DaycareData = String.Join(vbNewLine, TempDaycareData)
+            End If
+
+            ActionScript.RegisterID("PokemonIndev054Update")
+        End If
+
         loadedSave = True
     End Sub
 

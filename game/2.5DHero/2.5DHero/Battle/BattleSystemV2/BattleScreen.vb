@@ -2,10 +2,22 @@
 
     Public Class BattleScreen
 
+
         Inherits Screen
+
+        'Used for after fainting switching
+        Public Shared OwnFaint As Boolean = False
+        Public Shared OppFaint As Boolean = False
+
+
+
+        'Used for lead picking in PvP Battles
+        Public Shared OwnLeadIndex As Integer = 0
+        Public Shared OppLeadIndex As Integer = 0
 
 #Region "BattleValues"
 
+        Public IsChoiced As Boolean = False
         Public ClearMenuTime As Boolean = False
         Public Shared CanCatch As Boolean = True
         Public Shared CanRun As Boolean = True
@@ -108,6 +120,9 @@
             Me.IsTrainerBattle = False
             Me.MouseVisible = False
             Me.PVPGameJoltID = ""
+
+            OppFaint = False
+            OwnFaint = False
         End Sub
 
         Public Sub New(ByVal Trainer As Trainer, ByVal OverworldScreen As Screen, ByVal defaultMapType As Integer)
@@ -117,6 +132,9 @@
             Me.IsTrainerBattle = True
             Me.MouseVisible = False
             Me.PVPGameJoltID = ""
+
+            OppFaint = False
+            OwnFaint = False
         End Sub
 
 #Region "Initialize"
@@ -337,6 +355,12 @@
                 End If
             Next
             Me.OwnPokemon = Core.Player.Pokemons(meIndex)
+            If IsPVPBattle Then
+                OwnPokemon = Core.Player.Pokemons(OwnLeadIndex)
+                OwnPokemonIndex = OwnLeadIndex
+                OppPokemon = Trainer.Pokemons(OppLeadIndex)
+                OppPokemonIndex = OppLeadIndex
+            End If
 
             Me.IsTrainerBattle = True
             Me.ParticipatedPokemon.Add(meIndex)
@@ -421,8 +445,8 @@
 
             Me.BattleQuery.AddRange({cq, q, q1, q2, q22, q3, q31, q4})
 
-            Battle.SwitchInOwn(Me, meIndex, True, -1)
-            Battle.SwitchInOpp(Me, True, 0)
+            Battle.SwitchInOwn(Me, meIndex, True, OwnPokemonIndex)
+            Battle.SwitchInOpp(Me, True, OppPokemonIndex)
 
             Me.BattleQuery.AddRange({cq1, q5, cq2})
 
@@ -701,6 +725,7 @@
             Dim levelfile As String = SavedOverworld.Level.LevelFile
             Dim cRegion As String = SavedOverworld.Level.CurrentRegion.Split(CChar(","))(0)
             Dim battleMapData() As String = SavedOverworld.Level.BattleMapData.Split(CChar(","))
+            Dim surfingBattleMapData() As String = SavedOverworld.Level.SurfingBattleMapData.Split(CChar(","))
 
             If Me.IsPVPBattle = True Then
                 levelfile = "pvp.dat"
@@ -717,7 +742,7 @@
                     End Select
                 End If
 
-                If System.IO.File.Exists(GameController.GamePath & "\maps\battle\" & levelfile) = False And System.IO.File.Exists(GameController.GamePath & GameModeManager.ActiveGameMode.MapPath & "battle\" & levelfile) = False Then
+                If File.Exists(GameController.GamePath & "\maps\battle\" & levelfile) = False And File.Exists(GameController.GamePath & GameModeManager.ActiveGameMode.MapPath & "battle\" & levelfile) = False Then
                     Select Case Me.defaultMapType
                         Case 0
                             levelfile = cRegion & "0.dat"
@@ -730,13 +755,27 @@
                 End If
 
                 If SavedOverworld.Level.Surfing = True Then
-                    levelfile = cRegion & "1.dat"
-                    DiveBattle = True
-                    BattleMapOffset = New Vector3(0)
+                    If SavedOverworld.Level.SurfingBattleMapData <> "" Then
+                        Select Case surfingBattleMapData.Length
+                            Case 1
+                                levelfile = surfingBattleMapData(0)
+                            Case 4
+                                levelfile = surfingBattleMapData(0)
+                                BattleMapOffset = New Vector3(CSng(surfingBattleMapData(1).Replace(".", GameController.DecSeparator)), CSng(surfingBattleMapData(2).Replace(".", GameController.DecSeparator)), CSng(surfingBattleMapData(3).Replace(".", GameController.DecSeparator)))
+                            Case Else
+                                levelfile = cRegion & "1.dat"
+                                BattleMapOffset = New Vector3(0)
+                        End Select
+                        DiveBattle = True
+                    Else
+                        levelfile = cRegion & "1.dat"
+                        DiveBattle = True
+                        BattleMapOffset = New Vector3(0)
+                    End If
                 End If
             End If
 
-            If System.IO.File.Exists(GameController.GamePath & "\maps\battle\" & levelfile) = False And System.IO.File.Exists(GameController.GamePath & GameModeManager.ActiveGameMode.MapPath & "battle\" & levelfile) = False Then
+            If File.Exists(GameController.GamePath & "\maps\battle\" & levelfile) = False And File.Exists(GameController.GamePath & GameModeManager.ActiveGameMode.MapPath & "battle\" & levelfile) = False Then
                 Select Case Me.defaultMapType
                     Case 0
                         levelfile = "battle0.dat"
@@ -812,6 +851,8 @@ nextIndex:
                     ClientWaitForData = False
                     ReceivedPokemonData = False
                     BattleMenu.Reset()
+                    ClearMenuTime = True
+                    BattleMenu.Update(Me)
                 End If
             End If
             If Me.IsHost = False And Me.LockData <> "{}" And ReceivedPokemonData = False And ClientWaitForData = False And IsRemoteBattle = True Then
@@ -1070,6 +1111,8 @@ nextIndex:
                 ResetVars()
                 Core.SetScreen(New TransitionScreen(Me, New BlackOutScreen(Me), Color.Black, False))
             End If
+            OwnLeadIndex = 0
+            OppLeadIndex = 0
         End Sub
 
         Public Sub ChangeSavedScreen()
@@ -1091,22 +1134,22 @@ nextIndex:
 
         Public Sub SendInNewTrainerPokemon(ByVal index As Integer)
             Dim i As Integer = index
-            
+
             If i = -1 Then
-                If IsPvPBattle Then
+                If IsPVPBattle Then
                     i = 0
                     While Trainer.Pokemons(i).Status = Pokemon.StatusProblems.Fainted OrElse OppPokemonIndex = i OrElse Trainer.Pokemons(i).HP <= 0
                         i += 1
                     End While
-            
+
                 Else
                     i = Core.Random.Next(0, Trainer.Pokemons.count)
                     While Trainer.Pokemons(i).Status = Pokemon.StatusProblems.Fainted OrElse OppPokemonIndex = i OrElse Trainer.Pokemons(i).HP <= 0
                         i = Core.Random.Next(0, Trainer.Pokemons.count)
                     End While
                 End If
-            End If    
-            
+            End If
+
 
             OppPokemonIndex = i
             OppPokemon = Trainer.Pokemons(i)
@@ -1255,6 +1298,8 @@ nextIndex:
                         Battle.Won = True
                         EndBattle(False)
                         PVPLobbyScreen.BattleSuccessful = False
+                        OwnFaint = False
+                        OppFaint = False
                         Return False
                     End If
                 Else
@@ -1264,6 +1309,8 @@ nextIndex:
                     Battle.Won = False
                     EndBattle(False)
                     PVPLobbyScreen.BattleSuccessful = False
+                    OwnFaint = False
+                    OppFaint = False
                     Return False
                 End If
             End If
@@ -1354,6 +1401,21 @@ nextIndex:
             Dim newQueries As New List(Of String)
             Dim tempData As String = ""
             Dim cData As String = data
+            Dim s As Screen = Core.CurrentScreen
+            While Not s.PreScreen Is Nothing And s.Identification <> Identifications.BattleScreen
+                s = s.PreScreen
+            End While
+            If s.Identification = Identifications.BattleScreen Then
+                If data = "-HostFainted-" Then
+                    OppFaint = True
+                    Exit Sub
+                End If
+                If data = "-ClientFainted-" Then
+                    OwnFaint = True
+                    Exit Sub
+                End If
+            End If
+
 
             While cData.Length > 0
                 If cData(0).ToString() = "|" AndAlso tempData(tempData.Length - 1).ToString() = "}" Then
@@ -1370,10 +1432,7 @@ nextIndex:
                 tempData = ""
             End If
 
-            Dim s As Screen = Core.CurrentScreen
-            While Not s.PreScreen Is Nothing And s.Identification <> Identifications.BattleScreen
-                s = s.PreScreen
-            End While
+
 
             If s.Identification = Identifications.BattleScreen Then
                 CType(s, BattleScreen).BattleQuery.Clear()
@@ -1413,12 +1472,18 @@ nextIndex:
             End While
 
             CType(s, BattleScreen).BattleMenu.Visible = False
-            CType(s, BattleScreen).Battle.StartMultiTurnAction(CType(s, BattleScreen))
+
+            'prevents multi turn action to take place in an after fainting switching turn
+            If Not (OppFaint And CType(s, BattleScreen).IsRemoteBattle) Then
+                CType(s, BattleScreen).Battle.StartMultiTurnAction(CType(s, BattleScreen))
+            Else
+                CType(s, BattleScreen).BattleMenu.Visible = True
+            End If
         End Sub
 
         Public Sub SendEndRoundData()
             Dim lockData As String = "{}"
-            Dim oppStep As Battle.RoundConst = Battle.GetOppStep(Me, Nothing)
+            Dim oppStep As Battle.RoundConst = Battle.GetOppStep(Me, Battle.OwnStep)
             If Battle.SelectedMoveOpp = False Then
                 If oppStep.StepType = BattleSystem.Battle.RoundConst.StepTypes.Move Then
                     lockData = "{" & CType(oppStep.Argument, Attack).ID.ToString() & "}"

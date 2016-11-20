@@ -286,12 +286,18 @@
 
     Private Sub StartBattle()
         If Not Me.OwnTeam Is Nothing And Not OppTeam Is Nothing Then
-            Core.ServersManager.ServerConnection.SendPackage(New Servers.Package(Servers.Package.PackageTypes.BattleStart, Core.ServersManager.ID, Servers.Package.ProtocolTypes.TCP, PartnerNetworkID.ToString()))
-            If ReceivedBattleOffer = True Then
-                InitializeBattle()
-            Else
-                SentBattleOffer = True
-            End If
+            Core.SetScreen(New ChoosePokemonScreen(Core.CurrentScreen, Item.GetItemByID(5), AddressOf LeadPickedStart, "Choose your lead.", True, True, False, _pokemonList:=OwnTeam))
+        End If
+    End Sub
+
+    Private Sub LeadPickedStart(ByVal index As Integer)
+        BattleSystem.BattleScreen.OwnLeadIndex = index
+        Core.ServersManager.ServerConnection.SendPackage(New Servers.Package(Servers.Package.PackageTypes.BattleOffer,
+                Core.ServersManager.ID, Servers.Package.ProtocolTypes.TCP, {PartnerNetworkID.ToString(), CStr(index)}.ToList()))
+        If ReceivedBattleOffer = True Then
+            InitializeBattle()
+        Else
+            SentBattleOffer = True
         End If
     End Sub
 
@@ -490,7 +496,8 @@
         End If
     End Sub
 
-    Public Shared Sub ReceiveBattleStart()
+    Public Shared Sub ReceiveBattleStart(ByVal index As Integer)
+        BattleSystem.BattleScreen.OppLeadIndex = index
         If IsLobbyScreen() = True Then
             If SentBattleOffer = True Then
                 StartBattleRemote = True
@@ -596,6 +603,8 @@
             MusicManager.PlayMusic("lobby", False)
             Core.Player.Pokemons.Clear()
             Core.Player.Pokemons.AddRange(TempOriginalTeam.ToArray())
+            BattleSystem.BattleScreen.OwnFaint = False
+            BattleSystem.BattleScreen.OppFaint = False
         End If
     End Sub
 
@@ -648,6 +657,8 @@
         Else
             PlayerStatistics.Track("PVP Losses", 1)
         End If
+        BattleSystem.BattleScreen.OwnFaint = False
+        BattleSystem.BattleScreen.OppFaint = False
     End Sub
 
     Private Sub DrawBattleResults()
